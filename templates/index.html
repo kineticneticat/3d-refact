@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>3d</title>
+	<style>
+		canvas {
+			background-color: #ddd;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script type='module' src='../static/main.mjs'></script>
+	<script type='module' src='../static/math/Vec.mjs'></script>
+	<script type='module' src='../static/math/Rotation.mjs'></script>
+	<script type='module' src='../static/math/util.mjs'></script>
+	<script type='module' src='../static/parts.mjs'></script>
+	<script type='module' src='../static/parse.mjs'></script>
+	<script type='module' src='../static/obj.mjs'></script>
+	<br>
+	<label for='vertices'>Vertices</label>
+	<input type='checkbox' id='vertices'>
+	<label for='edges'>Edges</label>
+	<input type='checkbox' id='edges'>
+	<label for='faces'>Faces</label>
+	<input type='checkbox' id='faces' checked>
+	<br>
+	<div id='out'></div>
+</body>
+</html>
