@@ -1,4 +1,7 @@
 
+import json
+
+
 def parse(name):
 	print(name)
 	txt = []
@@ -25,9 +28,15 @@ def parse(name):
 			print(index)
 			points = list(map(lambda a: str(int(a[0]) - 1), index))
 			txt.append({'type': 'f', 'indices': points})
-	return txt
+	if __name__ == '__main__':
+		with open('static/obj.mjs', 'wt') as fp:
+			json.dump(f'export let data = {txt}', fp)
+	else:
+		return txt
 # txt = f'export let data = {txt}'
 
 # print(txt)
 # with open('static/obj.mjs', 'w') as f:
 # 	f.write(txt)
+if __name__ == '__main__':
+	parse(input(': \n'))
