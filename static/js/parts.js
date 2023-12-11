@@ -1,6 +1,6 @@
-import {Vec3, Vec2} from './math/Vec.mjs'
-import {extrinsic, intrinsic} from './math/Rotation.mjs'
-import {settings, ctx, VertexRegistry, sun, offset} from './main.mjs'
+import {Vec3, Vec2} from './math/Vec.js'
+import {extrinsic, intrinsic} from './math/MRotation.js'
+import {settings, ctx, VertexRegistry, sun, offset} from './main.js'
 let scale = 150
 
 export class Vertex {

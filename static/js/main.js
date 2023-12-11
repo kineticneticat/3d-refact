@@ -1,7 +1,7 @@
-import {Vertex, Edge, Face} from './parts.mjs'
-import {Vec3} from './math/Vec.mjs'
-import {Rotation} from './math/Rotation.mjs'
-import {read} from './parse.mjs'
+import {Vertex, Edge, Face} from './parts.js'
+import {Vec3} from './math/Vec.js'
+import {MRotation} from './math/MRotation.js'
+import {read} from './parse.js'
 
 export let canvas = document.getElementById('canvas')
 export let ctx = canvas.getContext('2d')
@@ -167,13 +167,13 @@ let move = () => {
 	if (key.Sh) {
 		movement = movement.add(new Vec3(0, -1, 0))
 	}
-	let rotation = new Rotation(0, 0, 0)
+	let rotation = new MRotation(0, 0, 0)
 	let div = 22.5
 	if (key.Up) {
-		rotation = rotation.add(new Rotation(div, 0, 0))
+		rotation = rotation.add(new MRotation(div, 0, 0))
 	}
 	if (key.Do) {
-		rotation = rotation.add(new Rotation(-div, 0, 0))
+		rotation = rotation.add(new MRotation(-div, 0, 0))
 	}
 	
 	

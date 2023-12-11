@@ -1,6 +1,6 @@
-import {Vec3} from './Vec.mjs'
+import {Vec3} from './Vec.js'
 
-export class Rotation {
+export class MRotation {
 	constructor(a, b, y) {
 		this.a = a
 		this.b = b

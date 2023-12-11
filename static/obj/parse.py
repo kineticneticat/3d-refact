@@ -29,8 +29,8 @@ def parse(name):
 			points = list(map(lambda a: str(int(a[0]) - 1), index))
 			txt.append({'type': 'f', 'indices': points})
 	if __name__ == '__main__':
-		with open('static/obj.mjs', 'wt') as fp:
-			json.dump(f'export let data = {txt}', fp)
+		with open('static/js/obj.js', 'wt') as fp:
+			fp.write(f'export let data = {txt}')
 	else:
 		return txt
 # txt = f'export let data = {txt}'

@@ -1,5 +1,5 @@
-import {AddVertex, AddEdge, AddFace} from './main.mjs'
-import {data} from './obj.mjs'
+import {AddVertex, AddEdge, AddFace} from './main.js'
+import {data} from './obj.js'
 
 export function read() {
 	data.forEach(x => {
