@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module":"ESNext",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outDir": "static/js",
+    "sourceMap": true
+  },
+  "include": ["static/ts/**/*"]
+}
