@@ -19,6 +19,9 @@ export class Vec3 {
 	get isZero() {
 		return this.x == 0 && this.y == 0 && this.z == 0
 	}
+	static get i() {return new Vec3(1, 0, 0)}
+	static get j() {return new Vec3(0, 1, 0)}
+	static get k() {return new Vec3(0, 0, 1)}
 	add(vec: Vec3) {
 		return new Vec3(this.x+vec.x, this.y+vec.y, this.z+vec.z)
 	}

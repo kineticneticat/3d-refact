@@ -35,6 +35,21 @@ var Vec3 = (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Vec3, "i", {
+        get: function () { return new Vec3(1, 0, 0); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Vec3, "j", {
+        get: function () { return new Vec3(0, 1, 0); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Vec3, "k", {
+        get: function () { return new Vec3(0, 0, 1); },
+        enumerable: false,
+        configurable: true
+    });
     Vec3.prototype.add = function (vec) {
         return new Vec3(this.x + vec.x, this.y + vec.y, this.z + vec.z);
     };

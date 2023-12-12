@@ -32,6 +32,9 @@ var Vertex = (function () {
         enumerable: false,
         configurable: true
     });
+    Vertex.prototype.turn = function (rot) {
+        this.pos = rot.rotate(this.pos);
+    };
     return Vertex;
 }());
 export { Vertex };

@@ -12,6 +12,7 @@ export let EdgeRegistry: Edge[] = []
 export let FaceRegistry: Face[] = []
 let FaceOrder: [number, number][] = []
 // export let ObjectRegistry = []
+let pi = Math.PI
 
 
 
@@ -40,11 +41,11 @@ let key = {
 	S: false, 
 	D: false, 
 	Up: false, 
-	Do: false, 
-	Le: false, 
-	Ri: false, 
-	Sp: false, 
-	Sh: false
+	Down: false, 
+	Left: false, 
+	Right: false, 
+	Space: false, 
+	Shift: false
 }
 
 
@@ -70,22 +71,22 @@ window.onload = () => {
 				key.D = true
 				break;
 			case 37:
-				key.Le = true
+				key.Left = true
 				break;
 			case 38:
 				key.Up = true
 				break;
 			case 39:
-				key.Ri = true
+				key.Right = true
 				break;
 			case 40:
-				key.Do = true
+				key.Down = true
 				break;
 			case 32:
-				key.Sp = true
+				key.Space = true
 				break;
 			case 16:
-				key.Sh = true
+				key.Shift = true
 				break;
 		}
 	})
@@ -104,22 +105,22 @@ window.onload = () => {
 				key.D = false
 				break;
 			case 37:
-				key.Le = false
+				key.Left = false
 				break;
 			case 38:
 				key.Up = false
 				break;
 			case 39:
-				key.Ri = false
+				key.Right = false
 				break;
 			case 40:
-				key.Do = false
+				key.Down = false
 				break;
 			case 32:
-				key.Sp = false
+				key.Space = false
 				break;
 			case 16:
-				key.Sh = false
+				key.Shift = false
 				break;
 		}
 	})
@@ -162,20 +163,20 @@ let move = () => {
 	if (key.D) {
 		movement = movement.add(new Vec3(-1, 0, 0))
 	}
-	if (key.Sp) {
+	if (key.Space) {
 		movement = movement.add(new Vec3(0, 1, 0))
 	}
-	if (key.Sh) {
+	if (key.Shift) {
 		movement = movement.add(new Vec3(0, -1, 0))
 	}
-	// let rotation = new MRotation(0, 0, 0)
-	// let div = 22.5
-	// if (key.Up) {
-	// 	rotation = rotation.add(new MRotation(div, 0, 0))
-	// }
-	// if (key.Do) {
-	// 	rotation = rotation.add(new MRotation(-div, 0, 0))
-	// }
+	let div = pi/8
+	let rotation = new Quaternion(1,0,0,0)
+	if (key.Up) {
+		rotation = (Quaternion.aa(Vec3.i, div)).hamilton(rotation)
+	}
+	if (key.Down) {
+		rotation = (Quaternion.aa(Vec3.i, -div)).hamilton(rotation)
+	}
 	
 	
 
@@ -185,9 +186,10 @@ let move = () => {
 		VertexRegistry.forEach((x) => {x.project()})
 	}
 	
-	// if (!rotation.isZero()) {
-	// 	VertexRegistry.forEach((x) => {x.turn(rotation)})
-	// }
+	if (!rotation.isZero) {
+		console.log("a")
+		VertexRegistry.forEach((x) => {x.turn(rotation)})
+	}
 }
 
 let draw = () => {

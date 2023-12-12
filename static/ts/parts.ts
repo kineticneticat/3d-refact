@@ -1,5 +1,6 @@
 import {Vec3, Vec2} from './math/Vec.js'
 import {settings, ctx, VertexRegistry, sun, offset} from './main.js'
+import { Quaternion } from './math/Quaternion.js'
 let scale = 150
 
 export class Vertex {
@@ -27,11 +28,9 @@ export class Vertex {
 	get show() {
 		return this.offset.z > -150
 	}
-	// turn(rot) {
-	// 	let actual = this.pos.add(this.offset)
-	// 	let rotated = extrinsic(rot.a, rot.b, rot.y, actual, new Vec3())
-	// 	this.offset = rotated.sub(this.pos)
-	// }
+	turn(rot: Quaternion) {
+		this.pos = rot.rotate(this.pos)
+	}
 }
 
 export class Edge {

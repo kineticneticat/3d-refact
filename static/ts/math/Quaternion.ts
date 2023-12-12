@@ -19,6 +19,18 @@ export class Quaternion {
 
         return new Quaternion(C, norm.x*S, norm.y*S, norm.z*S)
     }
+    get isZero() {
+        return this.a==1&&this.b==0&&this.c==0&&this.d==0
+    }
+    static asQuat(vec: Vec3) {
+        return new Quaternion(0, vec.x, vec.y, vec.z)
+    }
+    get inv() {
+        return new Quaternion(this.a, -this.b, -this.c, -this.d)
+    }
+    get asVec3() {
+        return new Vec3(this.b, this.c, this.d)
+    }
 
     hamilton(a:Quaternion) {
         let b = this
@@ -28,5 +40,15 @@ export class Quaternion {
             a.a*a.c - a.b*b.d + a.c*b.a + a.d*b.b,
             a.a*b.d + a.b*b.c - a.c*b.b + a.d*b.d
         )
+    }
+
+    
+
+    rotate(pos: Vec3) {
+        let p = Quaternion.asQuat(pos)
+        let q = this
+        let q_ = q.inv
+        let v = q.hamilton(p.hamilton(q_))
+        return v.asVec3
     }
 }
