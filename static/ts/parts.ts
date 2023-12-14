@@ -1,5 +1,5 @@
 import {Vec3, Vec2} from './math/Vec.js'
-import {settings, ctx, VertexRegistry, sun, offset} from './Main.js'
+import {settings, ctx, VertexRegistry, sun, offset, rotation} from './Main.js'
 import { Quaternion } from './math/Quaternion.js'
 let scale = 150
 
@@ -11,7 +11,7 @@ export class Vertex {
 		this.project()
 	}
 	get global() {
-		return this.local.add(offset)
+		return rotation.rotate(this.local).add(offset)
 	}
 	project() {
 		this.proj = new Vec2((this.global.x*scale/(this.global.z+scale)), (this.global.y*scale/(this.global.z+scale)))
@@ -29,10 +29,8 @@ export class Vertex {
 	get show() {
 		return this.global.z > -150
 	}
-	turn(rot: Quaternion) {
-		let temp = this.local.sub(offset)
-		temp = rot.rotate(temp)
-		this.local = temp.add(offset)
+	turn() {
+		this.local = rotation.rotate(this.local)
 	}
 }
 

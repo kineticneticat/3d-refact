@@ -6,6 +6,7 @@ export var canvas = document.getElementById('canvas');
 export var ctx = canvas.getContext('2d');
 export var sun = new Vec3(-1, -1, 1);
 export var offset = Vec3.zero;
+export var rotation = Quaternion.none;
 export var VertexRegistry = [];
 export var EdgeRegistry = [];
 export var FaceRegistry = [];
@@ -156,33 +157,26 @@ var move = function () {
         movement = movement.add(new Vec3(0, -1, 0));
     }
     var div = pi / 64;
-    var rotation = Quaternion.none;
+    rotation = Quaternion.none;
     if (key.Left) {
         rotation = Quaternion.aa(Vec3.j, div).compound(rotation);
     }
     if (key.Right) {
         rotation = Quaternion.aa(Vec3.j, -div).compound(rotation);
     }
-    var localI = rotation.rotate(Vec3.i);
-    if (key.Up) {
-        rotation = Quaternion.aa(localI, -div).compound(rotation);
-    }
-    if (key.Down) {
-        rotation = Quaternion.aa(localI, div).compound(rotation);
-    }
     if (!movement.isZero) {
         offset = offset.add(movement);
     }
     if (!rotation.isNone) {
-        VertexRegistry.forEach(function (x) { x.turn(rotation); });
+        VertexRegistry.forEach(function (x) { x.turn(); });
     }
     if (!(movement.isZero && rotation.isNone)) {
         VertexRegistry.forEach(function (x) { x.project(); });
     }
 };
 var order = function (a, b) {
-    var OA = a.sub(offset).mag;
-    var OB = b.sub(offset).mag;
+    var OA = rotation.rotate(a).sub(offset).mag;
+    var OB = rotation.rotate(b).sub(offset).mag;
     return OB - OA;
 };
 var draw = function () {

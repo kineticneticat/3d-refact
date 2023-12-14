@@ -1,3 +1,15 @@
+/*
+TODO:
+ - fix face order when turning
+ - fix turning
+
+
+*/
+
+
+
+
+
 import {Vertex, Edge, Face} from './Parts.js'
 import {Vec3} from './math/Vec.js'
 import {Quaternion} from './math/Quaternion.js'
@@ -7,6 +19,7 @@ export let canvas = document.getElementById('canvas') as HTMLCanvasElement
 export let ctx = canvas.getContext('2d')
 export let sun = new Vec3(-1,-1,1)
 export let offset = Vec3.zero
+export let rotation = Quaternion.none
 export let VertexRegistry: Vertex[] = []
 export let EdgeRegistry: Edge[] = []
 export let FaceRegistry: Face[] = []
@@ -151,9 +164,6 @@ let tick = () => {
 	move()
 	// cull()
 
-	// console.log([VertexRegistry[FaceRegistry[0].a], VertexRegistry[FaceRegistry[0].b], VertexRegistry[FaceRegistry[0].c]])
-	
-	// console.log(EdgeRegistr)	
 	requestAnimationFrame(tick)
 }
 
@@ -183,20 +193,20 @@ let move = () => {
 		movement = movement.add(new Vec3(0, -1, 0))
 	}
 	let div = pi/64
-	let rotation = Quaternion.none
+	rotation = Quaternion.none // reset rotation
 	if (key.Left) {
 		rotation = Quaternion.aa(Vec3.j, div).compound(rotation)
 	}
 	if (key.Right) {
 		rotation = Quaternion.aa(Vec3.j, -div).compound(rotation)
 	}
-	let localI = rotation.rotate(Vec3.i)
-	if (key.Up) {
-		rotation = Quaternion.aa(localI, -div).compound(rotation)
-	}
-	if (key.Down) {
-		rotation = Quaternion.aa(localI, div).compound(rotation)
-	}
+	// let localI = rotation.rotate(Vec3.i)
+	// if (key.Up) {
+	// 	rotation = Quaternion.aa(localI, -div).compound(rotation)
+	// }
+	// if (key.Down) {
+	// 	rotation = Quaternion.aa(localI, div).compound(rotation)
+	// }
 	
 
 	if (!movement.isZero) {
@@ -204,7 +214,7 @@ let move = () => {
 		offset = offset.add(movement)
 	}
 	if (!rotation.isNone) {
-		VertexRegistry.forEach((x) => {x.turn(rotation)})
+		VertexRegistry.forEach((x) => {x.turn()})
 	}
 	if (!(movement.isZero && rotation.isNone)) {
 		VertexRegistry.forEach((x) => {x.project()})
@@ -212,8 +222,8 @@ let move = () => {
 }
 
 let order = (a:Vec3,b:Vec3) => {
-	let OA = a.sub(offset).mag
-	let OB = b.sub(offset).mag
+	let OA = rotation.rotate(a).sub(offset).mag
+	let OB = rotation.rotate(b).sub(offset).mag
 	return OB - OA
 }
 

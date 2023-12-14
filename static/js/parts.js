@@ -1,5 +1,5 @@
 import { Vec2 } from './math/Vec.js';
-import { settings, ctx, VertexRegistry, sun, offset } from './Main.js';
+import { settings, ctx, VertexRegistry, sun, offset, rotation } from './Main.js';
 var scale = 150;
 var Vertex = (function () {
     function Vertex(local) {
@@ -8,7 +8,7 @@ var Vertex = (function () {
     }
     Object.defineProperty(Vertex.prototype, "global", {
         get: function () {
-            return this.local.add(offset);
+            return rotation.rotate(this.local).add(offset);
         },
         enumerable: false,
         configurable: true
@@ -37,10 +37,8 @@ var Vertex = (function () {
         enumerable: false,
         configurable: true
     });
-    Vertex.prototype.turn = function (rot) {
-        var temp = this.local.sub(offset);
-        temp = rot.rotate(temp);
-        this.local = temp.add(offset);
+    Vertex.prototype.turn = function () {
+        this.local = rotation.rotate(this.local);
     };
     return Vertex;
 }());
