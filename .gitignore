@@ -6,3 +6,4 @@ replit.nix
 .upm
 poetry.lock
 pyproject.toml
+node_modules/
