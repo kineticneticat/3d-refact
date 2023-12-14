@@ -1,7 +1,7 @@
-import {Vertex, Edge, Face} from './parts.js'
+import {Vertex, Edge, Face} from './Parts.js'
 import {Vec3} from './math/Vec.js'
 import {Quaternion} from './math/Quaternion.js'
-import {read} from './parse.js'
+import {read} from './Parse.js'
 
 export let canvas = document.getElementById('canvas') as HTMLCanvasElement
 export let ctx = canvas.getContext('2d')
@@ -10,21 +10,36 @@ export let offset = Vec3.zero
 export let VertexRegistry: Vertex[] = []
 export let EdgeRegistry: Edge[] = []
 export let FaceRegistry: Face[] = []
-let FaceOrder: [number, number][] = []
+let FaceOrder: [number, Vec3][] = []
 // export let ObjectRegistry = []
 let pi = Math.PI
 
+enum keyCodes {
+	W = 87,
+	A = 65,
+	S = 83,
+	D = 68,
 
+	UP = 38,
+	DOWN = 40,
+	LEFT = 37,
+	RIGHT = 39,
+
+	SPACE = 32,
+	SHIFT = 16
+}
 
 export function AddVertex(x:number, y:number, z:number) {
 	return VertexRegistry.push(new Vertex(new Vec3(x, y, z))) -1
 }
+
 export function AddEdge(a:number, b:number) {
 	return EdgeRegistry.push(new Edge(a, b)) -1
 }
+
 export function AddFace(a:number, b:number, c:number) {
 	let reg = FaceRegistry.push(new Face(a, b, c)) -1
-	FaceOrder.push([reg, FaceRegistry[reg].centre.mag])
+	FaceOrder.push([reg, FaceRegistry[reg].centre])
 	return reg
 }
 
@@ -48,8 +63,6 @@ let key = {
 	Shift: false
 }
 
-
-
 window.onload = () => {
 	canvas.width = settings.w
 	canvas.height = settings.h
@@ -58,74 +71,74 @@ window.onload = () => {
 	document.addEventListener('keydown', (e) => {
 		// console.log(e.keyCode)
 		switch (e.keyCode) {
-			case 87:
+			case keyCodes.W:
 				key.W = true
 				break;
-			case 65:
+			case keyCodes.A:
 				key.A = true
 				break;
-			case 83:
+			case keyCodes.S:
 				key.S = true
 				break;
-			case 68:
+			case keyCodes.D:
 				key.D = true
 				break;
-			case 37:
-				key.Left = true
-				break;
-			case 38:
+			case keyCodes.UP:
 				key.Up = true
 				break;
-			case 39:
-				key.Right = true
-				break;
-			case 40:
+			case keyCodes.DOWN:
 				key.Down = true
 				break;
-			case 32:
+			case keyCodes.LEFT:
+				key.Left = true
+				break;
+			case keyCodes.RIGHT:
+				key.Right = true
+				break;
+			case keyCodes.SPACE:
 				key.Space = true
 				break;
-			case 16:
+			case keyCodes.SHIFT:
 				key.Shift = true
 				break;
 		}
 	})
 	document.addEventListener('keyup', (e) => {
 		switch (e.keyCode) {
-			case 87:
+			case keyCodes.W:
 				key.W = false
 				break;
-			case 65:
+			case keyCodes.A:
 				key.A = false
 				break;
-			case 83:
+			case keyCodes.S:
 				key.S = false
 				break;
-			case 68:
+			case keyCodes.D:
 				key.D = false
 				break;
-			case 37:
-				key.Left = false
-				break;
-			case 38:
+			case keyCodes.UP:
 				key.Up = false
 				break;
-			case 39:
-				key.Right = false
-				break;
-			case 40:
+			case keyCodes.DOWN:
 				key.Down = false
 				break;
-			case 32:
+			case keyCodes.LEFT:
+				key.Left = false
+				break;
+			case keyCodes.RIGHT:
+				key.Right = false
+				break;
+			case keyCodes.SPACE:
 				key.Space = false
 				break;
-			case 16:
+			case keyCodes.SHIFT:
 				key.Shift = false
 				break;
 		}
 	})
 	AddVertex(sun.x, sun.y, sun.z)
-	FaceOrder.sort((a, b) => b[1]-a[1])
+	
 	
 	tick()
 }
@@ -169,30 +182,43 @@ let move = () => {
 	if (key.Shift) {
 		movement = movement.add(new Vec3(0, -1, 0))
 	}
-	let div = pi/8
-	let rotation = new Quaternion(1,0,0,0)
+	let div = pi/64
+	let rotation = Quaternion.none
+	if (key.Left) {
+		rotation = Quaternion.aa(Vec3.j, div).compound(rotation)
+	}
+	if (key.Right) {
+		rotation = Quaternion.aa(Vec3.j, -div).compound(rotation)
+	}
+	let localI = rotation.rotate(Vec3.i)
 	if (key.Up) {
-		rotation = (Quaternion.aa(Vec3.i, div)).hamilton(rotation)
+		rotation = Quaternion.aa(localI, -div).compound(rotation)
 	}
 	if (key.Down) {
-		rotation = (Quaternion.aa(Vec3.i, -div)).hamilton(rotation)
+		rotation = Quaternion.aa(localI, div).compound(rotation)
 	}
-	
 	
 
 	if (!movement.isZero) {
 		// console.log(movement)
 		offset = offset.add(movement)
-		VertexRegistry.forEach((x) => {x.project()})
 	}
-	
-	if (!rotation.isZero) {
-		console.log("a")
+	if (!rotation.isNone) {
 		VertexRegistry.forEach((x) => {x.turn(rotation)})
+	}
+	if (!(movement.isZero && rotation.isNone)) {
+		VertexRegistry.forEach((x) => {x.project()})
 	}
 }
 
+let order = (a:Vec3,b:Vec3) => {
+	let OA = a.sub(offset).mag
+	let OB = b.sub(offset).mag
+	return OB - OA
+}
+
 let draw = () => {
+	FaceOrder.sort((a, b) => {return order(a[1],b[1])})
 	if ((document.getElementById('vertices') as HTMLFormElement).checked) {
 		VertexRegistry.forEach(x => x.draw())
 	}

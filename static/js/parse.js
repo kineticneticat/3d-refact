@@ -1,4 +1,4 @@
-import { AddVertex, AddEdge, AddFace } from './main.js';
+import { AddVertex, AddEdge, AddFace } from './Main.js';
 import { data } from './obj.js';
 export function read() {
     data.forEach(function (x) {
@@ -16,4 +16,4 @@ export function read() {
         }
     });
 }
-//# sourceMappingURL=parse.js.map
+//# sourceMappingURL=Parse.js.map

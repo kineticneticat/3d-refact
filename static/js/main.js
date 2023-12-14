@@ -1,7 +1,7 @@
-import { Vertex, Edge, Face } from './parts.js';
+import { Vertex, Edge, Face } from './Parts.js';
 import { Vec3 } from './math/Vec.js';
 import { Quaternion } from './math/Quaternion.js';
-import { read } from './parse.js';
+import { read } from './Parse.js';
 export var canvas = document.getElementById('canvas');
 export var ctx = canvas.getContext('2d');
 export var sun = new Vec3(-1, -1, 1);
@@ -11,6 +11,19 @@ export var EdgeRegistry = [];
 export var FaceRegistry = [];
 var FaceOrder = [];
 var pi = Math.PI;
+var keyCodes;
+(function (keyCodes) {
+    keyCodes[keyCodes["W"] = 87] = "W";
+    keyCodes[keyCodes["A"] = 65] = "A";
+    keyCodes[keyCodes["S"] = 83] = "S";
+    keyCodes[keyCodes["D"] = 68] = "D";
+    keyCodes[keyCodes["UP"] = 38] = "UP";
+    keyCodes[keyCodes["DOWN"] = 40] = "DOWN";
+    keyCodes[keyCodes["LEFT"] = 37] = "LEFT";
+    keyCodes[keyCodes["RIGHT"] = 39] = "RIGHT";
+    keyCodes[keyCodes["SPACE"] = 32] = "SPACE";
+    keyCodes[keyCodes["SHIFT"] = 16] = "SHIFT";
+})(keyCodes || (keyCodes = {}));
 export function AddVertex(x, y, z) {
     return VertexRegistry.push(new Vertex(new Vec3(x, y, z))) - 1;
 }
@@ -19,7 +32,7 @@ export function AddEdge(a, b) {
 }
 export function AddFace(a, b, c) {
     var reg = FaceRegistry.push(new Face(a, b, c)) - 1;
-    FaceOrder.push([reg, FaceRegistry[reg].centre.mag]);
+    FaceOrder.push([reg, FaceRegistry[reg].centre]);
     return reg;
 }
 export var settings = {
@@ -45,74 +58,73 @@ window.onload = function () {
     read();
     document.addEventListener('keydown', function (e) {
         switch (e.keyCode) {
-            case 87:
+            case keyCodes.W:
                 key.W = true;
                 break;
-            case 65:
+            case keyCodes.A:
                 key.A = true;
                 break;
-            case 83:
+            case keyCodes.S:
                 key.S = true;
                 break;
-            case 68:
+            case keyCodes.D:
                 key.D = true;
                 break;
-            case 37:
-                key.Left = true;
-                break;
-            case 38:
+            case keyCodes.UP:
                 key.Up = true;
                 break;
-            case 39:
-                key.Right = true;
-                break;
-            case 40:
+            case keyCodes.DOWN:
                 key.Down = true;
                 break;
-            case 32:
+            case keyCodes.LEFT:
+                key.Left = true;
+                break;
+            case keyCodes.RIGHT:
+                key.Right = true;
+                break;
+            case keyCodes.SPACE:
                 key.Space = true;
                 break;
-            case 16:
+            case keyCodes.SHIFT:
                 key.Shift = true;
                 break;
         }
     });
     document.addEventListener('keyup', function (e) {
         switch (e.keyCode) {
-            case 87:
+            case keyCodes.W:
                 key.W = false;
                 break;
-            case 65:
+            case keyCodes.A:
                 key.A = false;
                 break;
-            case 83:
+            case keyCodes.S:
                 key.S = false;
                 break;
-            case 68:
+            case keyCodes.D:
                 key.D = false;
                 break;
-            case 37:
-                key.Left = false;
-                break;
-            case 38:
+            case keyCodes.UP:
                 key.Up = false;
                 break;
-            case 39:
-                key.Right = false;
-                break;
-            case 40:
+            case keyCodes.DOWN:
                 key.Down = false;
                 break;
-            case 32:
+            case keyCodes.LEFT:
+                key.Left = false;
+                break;
+            case keyCodes.RIGHT:
+                key.Right = false;
+                break;
+            case keyCodes.SPACE:
                 key.Space = false;
                 break;
-            case 16:
+            case keyCodes.SHIFT:
                 key.Shift = false;
                 break;
         }
     });
     AddVertex(sun.x, sun.y, sun.z);
-    FaceOrder.sort(function (a, b) { return b[1] - a[1]; });
     tick();
 };
 var tick = function () {
@@ -143,24 +155,38 @@ var move = function () {
     if (key.Shift) {
         movement = movement.add(new Vec3(0, -1, 0));
     }
-    var div = pi / 8;
-    var rotation = new Quaternion(1, 0, 0, 0);
+    var div = pi / 64;
+    var rotation = Quaternion.none;
+    if (key.Left) {
+        rotation = Quaternion.aa(Vec3.j, div).compound(rotation);
+    }
+    if (key.Right) {
+        rotation = Quaternion.aa(Vec3.j, -div).compound(rotation);
+    }
+    var localI = rotation.rotate(Vec3.i);
     if (key.Up) {
-        rotation = (Quaternion.aa(Vec3.i, div)).hamilton(rotation);
+        rotation = Quaternion.aa(localI, -div).compound(rotation);
     }
     if (key.Down) {
-        rotation = (Quaternion.aa(Vec3.i, -div)).hamilton(rotation);
+        rotation = Quaternion.aa(localI, div).compound(rotation);
     }
     if (!movement.isZero) {
         offset = offset.add(movement);
-        VertexRegistry.forEach(function (x) { x.project(); });
     }
-    if (!rotation.isZero) {
-        console.log("a");
+    if (!rotation.isNone) {
         VertexRegistry.forEach(function (x) { x.turn(rotation); });
     }
+    if (!(movement.isZero && rotation.isNone)) {
+        VertexRegistry.forEach(function (x) { x.project(); });
+    }
+};
+var order = function (a, b) {
+    var OA = a.sub(offset).mag;
+    var OB = b.sub(offset).mag;
+    return OB - OA;
 };
 var draw = function () {
+    FaceOrder.sort(function (a, b) { return order(a[1], b[1]); });
     if (document.getElementById('vertices').checked) {
         VertexRegistry.forEach(function (x) { return x.draw(); });
     }
@@ -171,4 +197,4 @@ var draw = function () {
         FaceOrder.forEach(function (x) { return FaceRegistry[x[0]].draw(); });
     }
 };
-//# sourceMappingURL=main.js.map
+//# sourceMappingURL=Main.js.map

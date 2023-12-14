@@ -5,7 +5,7 @@ import json
 def parse(name):
 	print(name)
 	txt = []
-	with open(name) as f:
+	with open("static/obj/" + name) as f:
 		# with open('static/cube.obj') as f:
 		data = f.read()
 	
@@ -29,7 +29,7 @@ def parse(name):
 			points = list(map(lambda a: str(int(a[0]) - 1), index))
 			txt.append({'type': 'f', 'indices': points})
 	if __name__ == '__main__':
-		with open('static/js/obj.js', 'wt') as fp:
+		with open('static/ts/obj.ts', 'wt') as fp:
 			fp.write(f'export let data = {txt}')
 	else:
 		return txt

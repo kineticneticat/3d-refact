@@ -1,4 +1,4 @@
-import {AddVertex, AddEdge, AddFace} from './main.js'
+import {AddVertex, AddEdge, AddFace} from './Main'
 import {data} from './obj.js'
 
 export function read() {
