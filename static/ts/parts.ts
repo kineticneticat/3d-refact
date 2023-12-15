@@ -11,7 +11,7 @@ export class Vertex {
 		this.project()
 	}
 	get global() {
-		return rotation.rotate(this.local).add(offset)
+		return this.local.add(offset)
 	}
 	project() {
 		this.proj = new Vec2((this.global.x*scale/(this.global.z+scale)), (this.global.y*scale/(this.global.z+scale)))
@@ -102,14 +102,32 @@ export class Face {
 		
 			// draw normal
 			if ((document.getElementById("snorm") as HTMLInputElement).checked) {
-				let A = new Vertex(this.centre)
-				let B = new Vertex(this.centre.add(this.surfaceNormal))
-				let b = B.local.norm.mul(255*4)
+				let A = this.centre
+				let B = A.add(this.surfaceNormal)
+				let c = B.norm.mul(255*4)
 
-				ctx.strokeStyle = `rgb(${b.x}, ${b.y}, ${b.z})`
-				ctx.beginPath()
-				canvas_arrow(ctx, A.projo, B.projo)
-				ctx.stroke()
+				let a = new Vertex(A)
+				let b = new Vertex(B)
+				if (a.show && b.show) {
+					ctx.strokeStyle = `rgb(${c.x}, ${c.y}, ${c.z})`
+					ctx.beginPath()
+					canvas_arrow(ctx, a.projo, b.projo)
+					ctx.stroke()
+				}
+			}
+			if ((document.getElementById("order") as HTMLInputElement).checked) {
+				let A = this.centre
+				let B = offset.mul(-1)
+				let AB = rotation.rotate(A).sub(B).mag*2
+				
+				let a = new Vertex(A)
+				let b = new Vertex(B)
+				if (a.show) {
+					ctx.strokeStyle = `rgb(${AB}, ${AB}, ${AB})`
+					ctx.beginPath()
+					canvas_arrow(ctx, a.projo, b.projo)
+					ctx.stroke()
+				}
 			}
 		}
 	}

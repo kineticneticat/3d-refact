@@ -8,7 +8,7 @@ var Vertex = (function () {
     }
     Object.defineProperty(Vertex.prototype, "global", {
         get: function () {
-            return rotation.rotate(this.local).add(offset);
+            return this.local.add(offset);
         },
         enumerable: false,
         configurable: true
@@ -114,13 +114,30 @@ var Face = (function () {
             ctx.lineTo(projc.x, projc.y);
             ctx.fill();
             if (document.getElementById("snorm").checked) {
-                var A = new Vertex(this.centre);
-                var B = new Vertex(this.centre.add(this.surfaceNormal));
-                var b = B.local.norm.mul(255 * 4);
-                ctx.strokeStyle = "rgb(".concat(b.x, ", ").concat(b.y, ", ").concat(b.z, ")");
-                ctx.beginPath();
-                canvas_arrow(ctx, A.projo, B.projo);
-                ctx.stroke();
+                var A = this.centre;
+                var B = A.add(this.surfaceNormal);
+                var c = B.norm.mul(255 * 4);
+                var a = new Vertex(A);
+                var b = new Vertex(B);
+                if (a.show && b.show) {
+                    ctx.strokeStyle = "rgb(".concat(c.x, ", ").concat(c.y, ", ").concat(c.z, ")");
+                    ctx.beginPath();
+                    canvas_arrow(ctx, a.projo, b.projo);
+                    ctx.stroke();
+                }
+            }
+            if (document.getElementById("order").checked) {
+                var A = this.centre;
+                var B = offset.mul(-1);
+                var AB = rotation.rotate(A).sub(B).mag * 2;
+                var a = new Vertex(A);
+                var b = new Vertex(B);
+                if (a.show) {
+                    ctx.strokeStyle = "rgb(".concat(AB, ", ").concat(AB, ", ").concat(AB, ")");
+                    ctx.beginPath();
+                    canvas_arrow(ctx, a.projo, b.projo);
+                    ctx.stroke();
+                }
             }
         }
     };
